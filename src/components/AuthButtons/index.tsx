@@ -2,11 +2,11 @@ import { signIn } from "next-auth/react"
 import { AuthButton, Container } from "./styles"
 import { useRouter } from "next/router"
 
-type AuthButtonProps = {
+type AuthButtonsProps = {
   callbackUrl?: string
 }
 
-export const AuthButtons = ({ callbackUrl = "/" }: AuthButtonProps) => {
+export const AuthButtons = ({ callbackUrl = "/" }: AuthButtonsProps) => {
   const router = useRouter()
 
   const handleSignIn = (provider?: string) => {
