@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/Form/Input";
 import { MagnifyingGlass } from "@phosphor-icons/react/dist/ssr";
 import { useState } from "react";
 import { Tag } from "@/components/ui/Tag";
-import { BookCard } from "@/components/BookCard";
+import { BookCard, BookWithAvgRating } from "@/components/BookCard";
 import { useQuery } from "@tanstack/react-query";
 import { Category } from "@prisma/client";
 import { api } from "@/lib/axios";
@@ -19,6 +19,20 @@ const ExplorePage: NextPageWithLayout = () => {
   const { data: categories } = useQuery<Category[]>(["categories"], async () => {
     const { data } = await api.get("/books/categories")
     return data.categories ?? []
+  })
+
+  const { data: books } = useQuery<BookWithAvgRating[]>(['books', selectedCategory], async () => {
+    const { data } = await api.get('books', {
+      params: {
+        category: selectedCategory
+      }
+    })
+
+    return data?.books ?? []
+  })
+
+  const filteredBooks = books?.filter(book => {
+    return book.name.toLowerCase().includes(search.toLowerCase()) || book.author.toLowerCase().includes(search.toLowerCase())
   })
 
   return (
@@ -47,7 +61,9 @@ const ExplorePage: NextPageWithLayout = () => {
       </TagsContainer>
 
       <BooksGrid>
-        {/* <BookCard size="lg" book={}/> */}
+        {filteredBooks?.map(book => (
+          <BookCard key={book.id} size="lg" book={book} />
+        ))}
       </BooksGrid>
     </ExploreContainer>
   )
